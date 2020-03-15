@@ -20,8 +20,7 @@ function Optimize-VMDisk {
         Outputs a PSObject. 
         
     .EXAMPLE
-        Optimize-VMDisk -Name ET-DC-02 -Shutdown
-                
+        Optimize-VMDisk -Name ET-DC-02 -Shutdown            
     #>    
     [CmdletBinding()]
     Param(
