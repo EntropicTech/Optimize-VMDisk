@@ -3,23 +3,23 @@ function Optimize-VMDisk {
         .SYNOPSIS
         This is a cmdlet that will mount, optimize and dismount a VM's disks.
 
-    .DESCRIPTION
+        .DESCRIPTION
         This cmdlet verifies that a VM is turned off, disks are unmounted and that it has no checkpoints.
         If the VM meets all of these requirements it mounts the VM's disks read only and then performs Optimize-VHD on the VM's disks and then dismounts the disk.
 
-    .PARAMETER Name
+        .PARAMETER Name
         This is the name of the VM that you want optimized. Accepts pipeline input from Get-VM.
 
-    .PARAMETER Shutdown
+        .PARAMETER Shutdown
         If used, this will perform Stop-VM -Force on all of the VMs selected to be optimized.
     
-    .INPUTS
+        .INPUTS
         Accepts pipeline input from Get-VM.
 
-    .OUTPUTS
+        .OUTPUTS
         Outputs a PSObject. 
         
-    .EXAMPLE
+        .EXAMPLE
         Optimize-VMDisk -Name ET-DC-02 -Shutdown            
     #>    
     [CmdletBinding()]
@@ -103,7 +103,7 @@ function Optimize-VMDisk {
                             Write-Host "Couldn't dismount. $($Path)" -ForegroundColor Red
                             Write-Host $_.Exception.Message -ForegroundColor Red                        
                         }
-
+                        
                         [PSCustomObject]@{
                             VMName = $VM.Name
                             Disk = $Path
