@@ -34,8 +34,3 @@ ET-DC-02 D:\VMs\ET-DC-02\2019-Core.vhdx           20          14           6
 ## Authors
 
 Dillon Childers
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
-
-
-
