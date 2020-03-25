@@ -9,7 +9,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Installing
 
-First step is to download a copy of the Optimize-VMDisk.ps1 from github and copy it to the server that you'll be performing the optimization on.
+First step is to download a copy of the Optimize-VMDisk.ps1 from GitHub and copy it to the Hyper-V server that is hosting the VMs that you'll be performing the optimization on.
 
 Next you'll need to open an administrative powershell window and import the module in.
 ```
