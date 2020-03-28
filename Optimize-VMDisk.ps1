@@ -44,18 +44,25 @@ function Optimize-VMDisk {
         foreach ($vmname in $Name) {
 
             # Collect the VMs we are working with.
-            $VM = Get-VM -Name $vmname
-
-                # Shutsdown the VM before attempting the optimization process.
-                if ($Shutdown) {               
+            try {
+                Write-Verbose "Gathering information for $($vmname)."
+                $VM = Get-VM -Name $vmname
+                Write-Verbose "Found information for $($VM.Name)."
+            } catch {
+                Write-Verbose "Get-VM failed for $($VM.Name)."
+                Write-Host $_.Exception.Message -ForegroundColor Red             
+            }
+            
+            # Shutsdown the VM before attempting the optimization process.
+            if ($Shutdown) {               
+                try {
                     Write-Verbose "Attempting to shutdown $($VM.Name)."
-                    try {
-                        Stop-VM -Name $VM.Name -Force -Verbose
-                    } catch {
-                        Write-Verbose "Shutdown unsuccessful $($VM.Name)."
-                        Write-Host $_.Exception.Message -ForegroundColor Red 
-                    }
+                    Stop-VM -Name $VM.Name -Force -Verbose
+                } catch {
+                    Write-Verbose "Shutdown unsuccessful $($VM.Name)."
+                    Write-Host $_.Exception.Message -ForegroundColor Red 
                 }
+            }
                         
             # Build variable of the disks connected to this VM.
             Write-Verbose "Gathering VM disk info from $($VM.Name)."
@@ -80,6 +87,7 @@ function Optimize-VMDisk {
                             Write-Warning "$($_.VMName) has a checkpoint. Merge the checkpoint and try again."
                             continue
                         } else {
+                            
                             Write-Verbose "Virtual disk state verified."
                             
                             # Mount the VHD
@@ -93,11 +101,11 @@ function Optimize-VMDisk {
                             
                             # Optimize the VHD
                             try {
-                                Write-Verbose "Optimizing $Path."
-                                $VHDSizePre = $VHD.FileSize
+                                $VHDSizePre = [math]::Round($VHD.FileSize /1GB)
+                                Write-Verbose "Optimizing $Path." 
                                 Optimize-VHD -Path $Path
-                                $VHDSizePost = (Get-VHD -Path $Path).FileSize
-                                $VHDSavings = [math]::Round(($VHDSizePre - $VHDSizePost)/1GB)
+                                $VHDSizePost = [math]::Round( (Get-VHD -Path $Path).FileSize /1GB )
+                                $VHDSavings = $VHDSizePre - $VHDSizePost
                                 Write-Verbose "Saved $VHDSavings GB."   
                             } catch {
                                 Write-Host "Couldn't optimize $($Path)" -ForegroundColor Red
@@ -117,9 +125,9 @@ function Optimize-VMDisk {
                             [PSCustomObject]@{
                                 VMName = $VM.Name
                                 Disk = $Path
-                                'Original(GB)' = [math]::Round(($VHDSizePre /1GB))
-                                'Current(GB)' = [math]::Round(($VHDSizePost /1GB))
-                                'Savings(GB)' = [math]::Round(($VHDSavings /1GB))                                                                                
+                                'Original(GB)' = $VHDSizePre
+                                'Current(GB)' = $VHDSizePost
+                                'Savings(GB)' = $VHDSavings                                                                                
                             }
                         }                                                     
                     } else {
@@ -127,18 +135,18 @@ function Optimize-VMDisk {
                         continue
                     }
                 }
-
-                # If the VM was turned off then turn it back on
-                if ($Shutdown) {  
-                    try {
-                        Write-Verbose "Attempting to Start $($VM.Name)."
-                        Start-VM -Name $VM.Name -Verbose
-                    } catch {
-                        Write-Host "Couldn't start $($VM.Name)" -ForegroundColor Red
-                        Write-Host $_.Exception.Message -ForegroundColor Red    
-                    }
-                }  
             }
+
+            # If the VM was turned off then turn it back on
+            if ($Shutdown) {  
+                try {
+                    Write-Verbose "Attempting to Start $($VM.Name)."
+                    Start-VM -Name $VM.Name -Verbose
+                } catch {
+                    Write-Host "Couldn't start $($VM.Name)" -ForegroundColor Red
+                    Write-Host $_.Exception.Message -ForegroundColor Red    
+                }
+            }  
         }
     } End { $result }
 }
