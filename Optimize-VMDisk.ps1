@@ -135,18 +135,17 @@ function Optimize-VMDisk {
                         continue
                     }
                 }
+                # If the VM was turned off then turn it back on
+                if ($Shutdown) {  
+                    try {
+                        Write-Verbose "Attempting to Start $($VM.Name)."
+                        Start-VM -Name $VM.Name -Verbose
+                    } catch {
+                        Write-Host "Couldn't start $($VM.Name)" -ForegroundColor Red
+                        Write-Host $_.Exception.Message -ForegroundColor Red    
+                    }
+                }  
             }
-
-            # If the VM was turned off then turn it back on
-            if ($Shutdown) {  
-                try {
-                    Write-Verbose "Attempting to Start $($VM.Name)."
-                    Start-VM -Name $VM.Name -Verbose
-                } catch {
-                    Write-Host "Couldn't start $($VM.Name)" -ForegroundColor Red
-                    Write-Host $_.Exception.Message -ForegroundColor Red    
-                }
-            }  
         }
     } End { $result }
 }
