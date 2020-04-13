@@ -35,6 +35,13 @@ function Optimize-VMDisk {
     )
     Begin {
     
+    # Checks to see if it is being run in an administrative prompt. Breaks the script if not.
+    if ([bool](([System.Security.Principal.WindowsIdentity]::GetCurrent()).groups -match "S-1-5-32-544") -eq $False ) {
+       
+        Write-Error "This script must be run with administrator privledges. Relaunch script in an administrative prompt."
+        break
+    }
+
     # Variable Setup
     $result = [System.Collections.ArrayList]@()
 
