@@ -9,11 +9,14 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Installing
 
-First step is to download a copy of the Optimize-VMDisk.ps1 from GitHub and copy it to the Hyper-V server that is hosting the VMs that you'll be performing the optimization on.
+The recommended method is to install directly from the PSGallery.
 
-Next you'll need to open an administrative powershell window and import the module in.
 ```
-Import-Module C:\scripts\Optimize-VMDisk.ps1
+# Change Powershell prompt to use TLS1.2. This is a requirement for the PSGallery.
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+# Download and install the module from the PSGallery
+Install-Module Optimize-VMDisk -Repository PSGallery -Force
 ```
 
 ### Examples
